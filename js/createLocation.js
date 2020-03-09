@@ -1,24 +1,28 @@
 'use strict';
 
-module.exports = function createLocation(node, parent){
+/* Creates location object for dictionary record
+ *  @node - AST node
+ *  @parent - AST parent node
+ */
 
-  if (parent) {
-    //console.log('loc:', node.loc.start.line, node.type, parent.type)
-    if ((parent.type === 'CallExpression' || parent.type === 'VariableDeclarator') &&  node.type === 'MemberExpression')
-      node = parent;
-  }
+module.exports = function createLocation(node, parent) {
+    let n = (parent && (parent.type === 'CallExpression' || parent.type === 'VariableDeclarator') && node.type === 'MemberExpression')
+        ? parent
+        : node;
 
-  return {
-    start: {
-      line: node.loc.start.line,
-      column: node.loc.start.column,
-      pos: node.start
-    },
-    end: {
-      line: node.loc.end.line,
-      column: node.loc.end.column,
-      pos: node.end
-    },
-    type: parent ? parent.type : null
-  }
-}
+    return {
+        start: {
+            line: n.loc.start.line,
+            column: n.loc.start.column,
+            pos: n.start
+        },
+        end: {
+            line: n.loc.end.line,
+            column: n.loc.end.column,
+            pos: n.end
+        },
+        type: parent
+            ? parent.type
+            : null
+    };
+};

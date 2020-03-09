@@ -1,64 +1,69 @@
 'use strict';
 
-const path = require('path');   // standard Node.js module for PATH management
+/*  Read saved .json files with names data and outputs duplicated  */
+
 const fs = require('fs');     // standard Node.js module for file operations
 
-module.exports = function analyzeNames(files){
+module.exports = function analyzeNames(files) {
 
-  if (!(files instanceof Array)) return;
+    if (!(files instanceof Array)) return;
 
-  let buffer = [],
-      counter = files.length,
-      names = new Map();
+    let buffer = [],
+        counter = files.length,
+        names = new Map(),
+        analyze = () => {
+            buffer.forEach(r => {
+                let rec = names.get(r.name);
 
-  files.forEach( fileName => {
-    fs.readFile(fileName, 'UTF-8' ,(err, data) => {
-      if (err) throw err;
+                if (rec)
+                    rec.occures = rec.occures.concat(r.occures);
+                else
+                    names.set(r.name, r);
+            });
 
-      buffer = buffer.concat(JSON.parse(data));
-      counter--;
+            buffer.length = 0;  // clean buffer
+            names.forEach(rec => {
+                if (rec.occures.length > 1)
+                {
+                    rec.occures = rec.occures.reduce((tot, val) => {
+                        if (!tot.some(r => r.file === val.file))
+                            tot.push(val);
+                        return tot;
+                    }, []);
 
-      if (!counter) {
-        buffer.forEach( r => {
-          let rec = names.get(r.name);
+                    if (rec.occures.length > 1) buffer.push(rec);
+                }
+            });
 
-          if (!rec) names.set(r.name, r);
-          else rec.occures = rec.occures.concat( r.occures);
-        });
+            if (buffer.length)
+            {
+                let output = '';
+                buffer.forEach(e => {
+                    output += 'name: ' + e.name + ' - ' + '(' + e.occures.length + ')' + JSON.stringify(e.occures) + '\n\n\r';
+                });
+                fs.writeFile('result.txt', output, (err) => {
+                    if (err) throw err;
+                    console.log('Result is saved!');
+                });
+            }
+            else
+            {
+                fs.writeFile('result.txt', ' ', (err) => {
+                    if (err) throw err;
+                    console.log('No multiple names found');
+                });
+            }
+        };
 
-        buffer = [];
-        names.forEach(rec => {
-          if (rec.occures.length > 1) {
+    files.forEach(fileName =>
+        fs.readFile(fileName, 'UTF-8', (err, data) => {
+            if (err) throw err;
 
-             rec.occures = rec.occures.reduce( (tot, val) => {
-              if (!tot.some( r => { return r.file === val.file })) {
-                tot.push(val)
-              }
-              return tot;
-             }, []);
+            buffer = buffer.concat(JSON.parse(data));
+            counter--;
 
-             if (rec.occures.length > 1) buffer.push(rec);
-          }
+            if (!counter)
+                analyze();
         })
-
-        console.log(buffer)
-
-        if (buffer.length)
-        {
-          let output = '';
-          buffer.forEach( (e) => {
-              output += 'name: ' + e.name + ' - ' + '(' + e.occures.length + ')' + JSON.stringify(e.occures) +'\n\n\r';
-          });
-          fs.writeFile('result.txt', output, (err) => {
-            if (err) throw err;
-            console.log('Result is saved!' );
-          });
-        }
-        else fs.writeFile('result.txt', ' ', (err) => {
-            if (err) throw err;
-            console.log('No multiple names found');
-          });
-      }
-    }); 
-  })
-}
+    );
+};
