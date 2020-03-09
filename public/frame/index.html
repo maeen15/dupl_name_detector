@@ -1,0 +1,31 @@
+<!doctype html>  
+<html lang="en">
+<head>
+	<title>testpage</title>
+  <script src="../jquery.min.js"></script>
+  <!-- Grab global names from empty iframe  -->
+  <script src="grabiframe.js"></script>
+</head>
+<body>
+
+	<script type="text/javascript">
+
+		// this console command is importent to start a process on server
+		console.log('app started');
+
+		$.ajax({
+		  method: "POST",
+		  url: "http://localhost:3000/api",
+		  data: {
+			      	cmd: 'test',
+			    	data: { location: "Boston" }
+			    } 
+		  })
+		  .done(function( msg ) {
+		    //alert( "Data Saved: " + msg );
+		  });
+		
+	</script>
+
+</body>
+</html>
