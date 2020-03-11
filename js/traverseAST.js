@@ -7,6 +7,7 @@ const addToVocabular = require("./addToVocabular.js");
 const createLocation = require("./createLocation.js");
 
 const {
+        notANode,
         param,
         computed,
         namesUsed
@@ -20,11 +21,25 @@ const {
 */
 module.exports = function findBody( tree, treeName, namesTree, parent ){
 
+    let prev, isArray;
+
     if (!tree) return; // error in a code
 
+    if (tree instanceof Array)
+        isArray = 1;
+
     for (let key in tree)
-        if ( tree[key] && typeof tree[key] === 'object')
+        if ( !notANode.has(key) && tree[key] && typeof tree[key] === 'object')
         {
+            if (isArray)
+            {
+                tree[key].prev = prev;
+                prev = tree[key];
+                tree[key].parent = parent;
+            }
+            else if (!tree.parent)
+                tree.parent = parent;
+
             if (key === 'body')
             {
                 // check a start position of body -> add globals
@@ -79,7 +94,10 @@ module.exports = function findBody( tree, treeName, namesTree, parent ){
                 }
             }
             else
+            {
                 findBody( tree[key], treeName, namesTree, tree );
+                //tree[key].parent = tree;
+            }
         }
 
     //catch 'eval' expressions

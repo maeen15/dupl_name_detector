@@ -26,6 +26,7 @@ const {
         param,
         jqueryFn,
         declaredNames
+        //buffASTs
     } = require("./globals.js");
 
 let files,  // list of files found for tests
@@ -266,6 +267,11 @@ function scanFile( name, cb){
 
                         //let astTree = ast.parse(data);    // if use error non-tolerant AST
                         let astTree = ast.parse_dammit(data); // // if use error tolerant AST
+
+                        /*buffASTs[indexOfNames] = {
+                            file: name,
+                            tree: astTree
+                        };*/
 
                         declaredNames[indexOfNames] = {
                             file: name,

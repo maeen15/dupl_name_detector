@@ -85,7 +85,7 @@ var reservedGlobals = new Set([
 
 function getCurrentGlobals(){
 
-	return Object.keys(window)
+	return Object.getOwnPropertyNames(window)
 				.filter(function(key) {
 
 					return !iframeKeys.has(key) && key != 0 && !reservedGlobals.has(key)

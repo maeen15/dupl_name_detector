@@ -82,7 +82,7 @@ function checkPatterns(name, literal, node, wasDeclared, accumulator) {
             {
                 if (typeof value === "object")
                 {
-                    pattern = checkPatterns(name, literal, value, accumulator);
+                    pattern = checkPatterns(name, literal, value, wasDeclared,accumulator);
                     if (pattern.found)
                     {
                         found = pattern.found;

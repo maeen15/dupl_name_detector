@@ -1,5 +1,9 @@
 'use strict';
 
+const {
+    notANode
+} = require("./globals.js");
+
 module.exports = function buildNamesTree(body, tree){
     let makeRecord = d => ({
         body: body,
@@ -29,18 +33,23 @@ module.exports = function buildNamesTree(body, tree){
                 tree.names.push(makeRecord(n));
                 break;
 
-            default: goForDeclataions(n)
+            default: goForDeclarations(n)
         }
     });
 
-    function goForDeclataions(n) {
+    function goForDeclarations(n) {
         for (let key in n)
-            if ( n.hasOwnProperty(key) && n[key] && typeof n[key] === 'object')
+            if ( n.hasOwnProperty(key) && !notANode.has(key))
             {
-                if (n[key].type === 'VariableDeclaration')
-                    n[key].declarations.forEach(d => tree.names.push(makeRecord(d)));
-                else if (key !== 'body')
-                    goForDeclataions(n[key]);
+                let v = n[key];
+
+                if (v && typeof v === 'object')
+                {
+                    if (v.type === 'VariableDeclaration')
+                        v.declarations.forEach(d => tree.names.push(makeRecord(d)));
+                    else if (key !== 'body')
+                        goForDeclarations(v);
+                }
             }
     }
 };

@@ -9,7 +9,7 @@ function getValuesCollected(){
 	var iframe = document.createElement('iframe');
 
 	iframe.onload = function() {
-		valCollector = Object.keys(iframe.contentWindow); 
+		valCollector = Object.getOwnPropertyNames(iframe.contentWindow);
 	};
 
 	iframe.src = 'about:blank';

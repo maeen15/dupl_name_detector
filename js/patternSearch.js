@@ -281,6 +281,7 @@ module.exports = function scanBody(body, treeName, namesTree, parent_old, mode) 
             computed.push({
                 file: treeName,
                 name: dottedName,
+                expr,
                 nodeStart: node.start,
                 accName: acc
             });

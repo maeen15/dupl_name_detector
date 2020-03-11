@@ -104,7 +104,8 @@ dist
 .tern-port
 
 # Project  specific files & folders
-input
-output
-data
-vendor
+input/
+output/
+data/
+vendor/
+public/output/

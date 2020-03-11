@@ -1,12 +1,13 @@
 'use strict';
 const path = require('path');
 const addToVocabular = require( path.join(__dirname, "addToVocabular.js"));
+const createLocation = require("./createLocation.js");
 
 const {
     vocabular
 } = require("./globals.js");
 
-function createLocation(node){
+/*function createLocation(node){
     return {
         start: {
             line: node.loc.start.line,
@@ -19,7 +20,7 @@ function createLocation(node){
             pos: node.end
         }
     };
-}
+}*/
 
 function isNotDeclared(node, name){
     return node.names.some(nm => nm.name === name && nm.type !== 'assignee')
@@ -51,7 +52,7 @@ module.exports = function analyzeDeclared(root, treeName){
         for (let key in n){
             let v = n[key];
 
-            if ( v && n.hasOwnProperty(key) && typeof v === 'object')
+            if ( v && n.hasOwnProperty(key) && key !== 'parent' && key !== 'prev' && typeof v === 'object')
             {
                 if (v.type === 'Identifier' && inScope && isNotDeclared(root, v.name))
                 {

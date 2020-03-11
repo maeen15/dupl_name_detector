@@ -147,16 +147,19 @@ function dummyGlobal(){}
 	$.fn[injected(147,6,lett)] = function( method ) {
 		
 		return this;
-	};	
+	};
 
 	// catch dynamic: $.fn.testDd, $.fn.testEd
 	jQuery.each( [
 		"testDd",
 		"testEd"
 	], function( i, type ) {
-		let t = type, fn = 'fn';
+		let t = type,
+			fn = 'fn';
+		//
+		//............
 		// multiple computed properties
-		jQuery[injected(159,9,fn)][ injected(159,14,t) ] = function( fn ) {
+		jQuery[injected(162,9,fn)][ injected(162,14,t) ] = function( fn ) {
 			return this.on( type, fn );
 		};
 	});
@@ -166,7 +169,7 @@ function dummyGlobal(){}
 		
 		return dummy(), 
 				// catch dynamic: $.fn.testFd
-				injected(169,4,jQcopy.fn),jQcopy.fn.testFd = function(){ return this }, 
+				injected(172,4,jQcopy.fn),jQcopy.fn.testFd = function(){ return this }, 
 				this;
 	};
 	testF();
@@ -190,7 +193,7 @@ function dummyGlobal(){}
 
 	// test multiple computed property
 	// catch dynamic: $.b.ccc.d.e.f.ggg.n
-	$.b[injected(193,5,c)].d.e.f[injected(193,14,g)].n = '5';
+	$.b[injected(196,5,c)].d.e.f[injected(196,14,g)].n = '5';
 
 
     var lev='level2', 
@@ -202,22 +205,22 @@ function dummyGlobal(){}
 
 	// modifying a global object
 	// catch dynamic: AGlobalVar.newmethod
-	injected(205,1,mm),mm.newmethod = function(){};
+	injected(208,1,mm),mm.newmethod = function(){};
 
 	// catch dynamic: AGlobalVar.level2.newmethod2
-	injected(208,1,ff),ff[injected(208,4,new2)] = function(){};
+	injected(211,1,ff),ff[injected(211,4,new2)] = function(){};
 
 	// exclude2 should not be captured
-	injected(211,1,dummyObj),dummyObj[injected(211,10,exclude2)]  = function(){};
+	injected(214,1,dummyObj),dummyObj[injected(214,10,exclude2)]  = function(){};
 
 	// catch dynamic: AGlobalVar.level2.newmethod3
-	injected(214,1,mm.level2),mm.level2.newmethod3 = function(){};
+	injected(217,1,mm.level2),mm.level2.newmethod3 = function(){};
 
 	// catch dynamic: AGlobalVar.level2.newmethod4
-	injected(217,1,mm.level2),mm.level2[new4()] = function(){};
+	injected(220,1,mm.level2),mm.level2[new4()] = function(){};
 
 	// exclude3, exclude4, exclude5 should not be captured
-	injected(220,1,dummyObj),dummyObj.exclude3 = function(exclude4){ 
+	injected(223,1,dummyObj),dummyObj.exclude3 = function(exclude4){ 
 		var exclude5;
 		exclude4 = '';
 		exclude5 = '';
@@ -229,27 +232,27 @@ function dummyGlobal(){}
 		// computed property and member expression in chained assignment in variable declarations
 		var tt = 'testJd',
 			ttt = 'testGd',
-			dummy1583380228479=injected(232,3,jQcopy.fn),dummyVar =
+			dummy1583888935698=injected(235,3,jQcopy.fn),dummyVar =
 				// catch dynamic: $.fn.testGd
-				$.fn[injected(234,9,ttt)] =
+				$.fn[injected(237,9,ttt)] =
 					// catch dynamic: $.fn.testId
 					jQcopy.fn.testId = function() { return this };
 
 		// combined - computed property and unknown member expresiion		
 		return dummy(),
 			// catch dynamic: $.fn.testJd
-			injected(241,3,jQcopy.fn),jQcopy.fn[injected(241,13,tt)] = function() { return this },
+			injected(244,3,jQcopy.fn),jQcopy.fn[injected(244,13,tt)] = function() { return this },
 			// catch dynamic: AGlobalVar.testGd
-			injected(243,3,mm),mm[injected(243,6,ttt)] = function() { return this },
+			injected(246,3,mm),mm[injected(246,6,ttt)] = function() { return this },
 			this;
 	};
 	testFF();
 
 	//	assignment in a function call
-	injected(249,1,jQcopy.fn),dummy( jQcopy.fn.testKd = 'something');
+	injected(252,1,jQcopy.fn),dummy( jQcopy.fn.testKd = 'something');
 
 	// catch dynamic $.fn.testLd
-	injected(252,1,FN),FN.testLd = function(){ return this };
+	injected(255,1,FN),FN.testLd = function(){ return this };
 
 	// ****** eval test
 	function injector(t) {
@@ -273,7 +276,7 @@ function dummyGlobal(){}
 	anotherglobal = function(){ return this };
 
 	function thisChange(){
-		injected(276,2,this),this.testZZ = 'z';
+		injected(279,2,this),this.testZZ = 'z';
 	}
 
     // catch dynamic: $.testZZ

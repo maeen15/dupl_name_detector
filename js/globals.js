@@ -6,6 +6,7 @@ if (!global.globals)
     global.globals = (() => {
         return {
             // constants
+            notANode: new Set(['parent', 'prev', 'loc', 'range', 'trailingComments', 'leadingComments']),
             badWords: ['document.', '.style', '.css', 'self.', 'element.', 'table.', '.innerHTML', 'options.', 'module.exports', 'width', 'height'],
             goodWords: ['.w.', '.win', '.prototype', '.window', 'args[', 'arguments'],
             publicFolder: path.join(__dirname, '..', 'public'),
@@ -26,6 +27,7 @@ if (!global.globals)
 
             // buffers
             declaredNames: [],
+            //buffASTs: [],
             // ???? variables: [], // not window and jQuery names used in left part of assignments
             functions: [], // reserved
             classes: [],   // reserved

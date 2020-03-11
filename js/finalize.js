@@ -4,6 +4,7 @@ const path = require('path');   // standard Node.js module for PATH management
 const fs = require('fs').promises;     // standard Node.js module for file operations
 const addToVocabular = require("./addToVocabular.js");
 const resolve = require("./resolve.js");
+const findComputedSource = require("./findComputedSource.js");
 const Browser = require("./runPage.js");
 
 const {
@@ -88,18 +89,23 @@ async function prepareAndSaveComputed() {
                     file.names.push(val.name);
                 })
             );
-            return tot;
         }
+        else
+        {
+            file = getfile(val);
 
-        file = getfile(val);
-
-        if (val.name) file.names.push(val.name);
-        else if (val.eval) file.names.push('eval');
+            if (val.name)
+            {
+                delete val.expr;
+                file.names.push(val/*.name*/);
+            }
+            else if (val.eval) file.names.push('eval');
+        }
 
         return tot;
     }, []);
 
-    output.forEach(rec => {
+    /*output.forEach(rec => {
         rec.names = rec.names.filter(name =>
             goodWords.some(w => name.indexOf(w) >= 0) || !badWords.some(w => name.indexOf(w) >= 0)
         );
@@ -115,7 +121,7 @@ async function prepareAndSaveComputed() {
                     goodWords.some(w => name.indexOf(w) >= 0)
                 ).length
             )
-        );
+        );*/
 
     await fs.writeFile(path.join(outputFolder, 'computed.json'), JSON.stringify(output));
     console.log('computed is saved!');
@@ -165,6 +171,12 @@ function inTree(split, jQueryTree) {
 }
 
 async function writeTheRest(cb) {
+    if (param.testmode)
+    {
+        saveDeclaredNames();
+        prepareAndSaveComputed();
+    }
+
     try
     {
         await saveDictionary(jqueryFn, 'JQoutput', {
@@ -195,6 +207,7 @@ function findNewJqNames(file) {
 
         if (rec.accName)
         {
+
             if (typeof rec.nodeStart === 'object')
             {
                 rotateValues(
@@ -245,9 +258,13 @@ function rotateValues(rec, idx, name, obj, saver) {
 
     // if there is a value -> some value(s) retrieved from runtime
     else if (property.val && property.val.length)
+    {
+        findComputedSource(property, rec.expr);
+
         property.val.forEach(val =>
             rotateValues(rec, idx, name + '.' + val, obj, saver)
         );
+    }
 
     // if reached here -> a computed value was not resolved at runtime
     else
@@ -305,10 +322,11 @@ function saveDictionary(dictionary, outname, {saveJSON, prefix} = {}) {
 }
 
 function setComputedVal(v, members, files) {
+    let {val, line, col} = v;
+
     if (v.g)
     {
-        let {val, line, col} = v,
-            obj = members.find(d =>
+        let obj = members.find(d =>
                 d.loc.start.line === line && d.loc.start.column === col
             );
 
@@ -327,8 +345,7 @@ function setComputedVal(v, members, files) {
     }
     else
     {
-        let {val, line, col} = v,
-            obj = computed.find(d =>
+        let obj = computed.find(d =>
                 d.file === files[0].file &&
                 (d.accName && d.accName.some(r =>
                         r.loc.start.line === line && r.loc.start.column === col
@@ -350,8 +367,7 @@ function setComputedVal(v, members, files) {
         }
         else
         {
-            let {val, line, col} = v,
-                obj = members.find(d =>
+            let obj = members.find(d =>
                     d.loc.start.line === line && d.loc.start.column === col
                 );
 
@@ -398,7 +414,7 @@ async function saveInjected(file, list, cb){
     console.log('Injected saved!');
 
     res = await Browser.testPage( 'frame/index.html', null);
-    console.log('iframe keys:', res.type ==='string' ? JSON.parse(res.value).length : 'error on getting keys');
+    console.log('iframe keys:', res, res.type ==='string' ? JSON.parse(res.value).length : 'error on getting keys');
 
     await fs.writeFile( path.join(publicFolder, filename.slice(0, -3), 'keys.js'),
         'var iframeKeys = new Set('+ res.value +');');
@@ -423,11 +439,11 @@ module.exports = async function finalize(cb) {
         console.log('namesUsed is saved!');
     }
 
-    if (param.testmode)
+/*    if (param.testmode)
     {
         saveDeclaredNames();
         prepareAndSaveComputed();
-    }
+    }*/
 
     // same for JQuery names
     if (param.jQVersion === '1.4.4' || param.jQVersion === '1.5.1')
